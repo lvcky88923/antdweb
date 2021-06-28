@@ -6,6 +6,7 @@
         <a-menu-item key="tree">TreeDemo</a-menu-item>
         <a-menu-item key="dataStatistics">DataStatistics</a-menu-item>
         <a-menu-item key="orderList">orderList</a-menu-item>
+        <a-menu-item key="treeArea">treeArea</a-menu-item>
       </a-menu>
     </div>
     <TableDemo v-if="current[0] === 'table'"></TableDemo>
@@ -14,6 +15,7 @@
       v-if="current[0] === 'dataStatistics'"
     ></DataStatisticsPage>
     <OrderList v-if="current[0] === 'orderList'"></OrderList>
+    <TreeArea v-if="current[0] === 'treeArea'"></TreeArea>
   </div>
 </template>
 
@@ -22,6 +24,7 @@ import TableDemo from "./components/TableDemo";
 import TreeDeom from "./components/TreeDemo";
 import DataStatisticsPage from "./components/dataStatisticsPage";
 import OrderList from "./components/orderList";
+import TreeArea from "./components/TreeArea";
 export default {
   name: "App",
   components: {
@@ -29,9 +32,10 @@ export default {
     TreeDeom,
     DataStatisticsPage,
     OrderList,
+    TreeArea,
   },
   data() {
-    return { current: ["orderList"] };
+    return { current: ["treeArea"] };
   },
   methods: {},
 };

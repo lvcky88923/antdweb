@@ -2,7 +2,11 @@
   <div class="order-list">
     <a-tabs type="card" @change="callback">
       <a-tab-pane v-for="item in tabsList" :key="item.key" :tab="item.label">
-        <a-table class="table-header" :columns="columns" :data-source="[]"></a-table>
+        <a-table
+          class="table-header"
+          :columns="columns"
+          :data-source="[]"
+        ></a-table>
         <div class="table-lists" v-if="item.key == 1">
           <div class="table-item" v-for="item in 4" :key="item">
             <div class="table-header">
