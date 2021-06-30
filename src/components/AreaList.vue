@@ -8,19 +8,6 @@
         >{{ item.title }}</a-checkbox
       >
       <AreaPop :treeData="item.children"></AreaPop>
-      <!-- <a-popover placement="right" v-for="sitem in item.children" :key="sitem.key">
-        <template slot="content">
-          <a-checkbox-group v-model="checkedList" :options="plainOptions" @change="onChange" />
-        </template>
-        <a-checkbox
-          :indeterminate="indeterminate"
-          :checked="checkAll"
-          @change="onCheckAllChange"
-        >{{sitem.title}}</a-checkbox>
-      </a-popover>-->
-      <!-- <div v-if="item.children">
-        <AreaList :treeData="item.children"></AreaList>
-      </div>-->
     </div>
   </div>
 </template>

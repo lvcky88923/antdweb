@@ -18,8 +18,9 @@
           :tree-data="treeData"
           @expand="onExpand"
           @select="onSelect"
+          @check="onCheck"
         />
-      </div>-->
+      </div> -->
     </a-modal>
   </div>
 </template>
@@ -5761,8 +5762,8 @@ export default {
       this.expandedKeys = expandedKeys;
       this.autoExpandParent = false;
     },
-    onCheck(checkedKeys) {
-      console.log("onCheck", checkedKeys);
+    onCheck(checkedKeys, info) {
+      console.log("info", info);
       this.checkedKeys = checkedKeys;
     },
     onSelect(selectedKeys, info) {

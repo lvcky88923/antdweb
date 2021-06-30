@@ -35,6 +35,7 @@ export default {
     TreeArea,
   },
   data() {
+    false;
     return { current: ["treeArea"] };
   },
   methods: {},

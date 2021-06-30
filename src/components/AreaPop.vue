@@ -1,58 +1,41 @@
 <template>
   <div class="area-pop">
     <template v-for="item in treeData">
-      <!-- <a-popover v-if="item.children" placement="right" trigger="click" :key="item.key">
-        <template slot="content">
-          <a-checkbox-group
-            class="check-box-group"
-            v-model="checkedList"
-            :options="item.children"
-            @change="onChange"
-          >
-            <span slot="label" slot-scope="{ title, children }" style="color: red">
-              <a-popover placement="right" trigger="click">
-                <template slot="content">
-                  <AreaPop class="inner-area-item" :treeData="children"></AreaPop>
-                </template>
-                {{title}}
-              </a-popover>
-            </span>
-          </a-checkbox-group>
-        </template>
-        <a-checkbox
-          :indeterminate="indeterminate"
-          :checked="checkAll"
-          @change="onCheckAllChange"
-        >{{item.title}}</a-checkbox>
-      </a-popover>-->
       <a-checkbox
-        v-if="item.children"
         :key="item.key"
-        :indeterminate="indeterminate"
-        :checked="checkAll"
+        :indeterminate="item.indeterminate"
+        :checked="item.checkAll"
         :value="item.key"
         @change="onCheckAllChange"
       >
-        <a-popover v-if="item.children" placement="right" trigger="click" :key="item.key">
-          <template slot="content">
-            <a-checkbox-group class="check-box-group" :options="item.children">
-              <span slot="label" slot-scope="{ title, children }" style="color: red">
-                <a-popover placement="right" trigger="click">
+        <template v-if="!item.children">{{ item.title }}</template>
+        <a-popover v-else placement="right" trigger="click" :key="item.key">
+          <div slot="content" @click="onClick(item)">
+            <a-checkbox-group
+              class="check-box-group"
+              :options="item.children"
+              v-model="item.checkedList"
+              @change="onChange"
+            >
+              <span slot="label" slot-scope="scope" style="color: red">
+                <a-popover
+                  placement="right"
+                  trigger="click"
+                  @click="onClick(scope, item)"
+                >
                   <template slot="content">
-                    <AreaPop class="inner-area-item" :treeData="children"></AreaPop>
+                    <AreaPop
+                      class="inner-area-item"
+                      :treeData="scope.children"
+                    ></AreaPop>
                   </template>
-                  {{ title }}
+                  {{ scope.title }}
                 </a-popover>
               </span>
             </a-checkbox-group>
-          </template>
+          </div>
           {{ item.title }}
         </a-popover>
-      </a-checkbox>
-      <a-checkbox v-else :key="item.key" :value="item.key">
-        {{
-        item.title
-        }}
       </a-checkbox>
     </template>
   </div>
@@ -60,7 +43,6 @@
 
 <script>
 const plainOptions = ["Apple", "Pear", "Orange"];
-const defaultCheckedList = ["Apple", "Orange"];
 export default {
   name: "AreaPop",
   props: {
@@ -68,49 +50,82 @@ export default {
   },
   data() {
     return {
-      checkedList: defaultCheckedList,
+      checkedList: [],
       indeterminate: true,
       checkAll: false,
       plainOptions,
     };
   },
   methods: {
+    onClick(item, pItem) {
+      this.curItem = item || {};
+      this.curPItem = pItem || {};
+      console.log(this.curItem, this.curPItem);
+    },
     onChange(checkedList) {
-      this.indeterminate =
-        !!checkedList.length && checkedList.length < plainOptions.length;
-      this.checkAll = checkedList.length === plainOptions.length;
+      console.log(checkedList);
+      // this.curPItem.indeterminate =
+      //   !!checkedList.length &&
+      //   checkedList.length < this.curItem.children.length;
+      // if (this.curPItem.value) {
+      //   console.log(this.curPItem);
+      // } else {
+      //   this.curItem.checkAll =
+      //     checkedList.length === this.curItem.children.length;
+      // }
+      // this.curItem.indeterminate = this.curPItem.indeterminate;
+      // this.curItem.checkAll = this.curPItem.checkAll;
+      console.log(this.curPItem, this.curItem);
+    },
+    onChangeChild(value) {
+      console.log("ppp", value);
     },
     onCheckAllChange(e) {
-      console.log(this.changeTree(this.treeData, e.target.value))
-      // for (let index = 0; index < this.treeData.length; index++) {
-      //   const item = this.treeData[index];
-      //   if(item.key == e.target.value) {
-      //     console.log(item)
-      //   } else {
-
-      //   }
-      // }
-      console.log(e);
       if (e.target) {
-        Object.assign(this, {
-          checkedList: e.target.checked ? plainOptions : [],
-          indeterminate: false,
-          checkAll: e.target.checked,
-        });
+        let tree = this.changeTree(this.treeData, e.target.value);
+        if(tree.children) {
+          Object.assign(tree, {
+            checkedList: e.target.checked
+              ? this.getAllNodeId([], tree.children)
+              : [],
+            indeterminate: false,
+            checkAll: e.target.checked,
+          });
+        }
       }
     },
     changeTree(list, key) {
       for (let index = 0; index < list.length; index++) {
         const item = list[index];
-        if(item.key == key) {
-          console.log(item)
-          return item
+        if (item.key == key) {
+          return item;
         } else {
-          this.changeTree(item.children)
+          item.children && this.changeTree(item.children, key);
+        }
+      }
+    },
+    getAllNodeId(keys, tree) {
+      for (let i = 0; i < tree.length; i++) {
+        keys.push(tree[i].value);
+        if (tree[i].children) {
+          this.$set(tree[i], "checkedList", [])
+          keys = this.getAllNodeId(keys, tree[i].children);
+        }
+      }
+      return keys;
+    },
+    allCkecked(list) {
+      for (let index = 0; index < list.length; index++) {
+        const item = list[index];
+        if (item.children) {
+          item.children && this.allCkecked(item.children);
         }
       }
     },
   },
+  created() {
+    this.getAllNodeId([], this.treeData)
+  }
 };
 </script>
 
