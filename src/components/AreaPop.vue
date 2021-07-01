@@ -10,29 +10,25 @@
       >
         <template v-if="!item.children">{{ item.title }}</template>
         <a-popover v-else placement="right" trigger="click" :key="item.key">
-          <div slot="content" @click="onClick(item)">
-            <a-checkbox-group
+          <div slot="content">
+            <a-checkbox-group class="check-box-group" v-model="item.checkedList" @change="onChange">
+              <AreaPop class="inner-area-item" :treeData="item.children"></AreaPop>
+            </a-checkbox-group>
+            <!-- <a-checkbox-group
               class="check-box-group"
               :options="item.children"
               v-model="item.checkedList"
               @change="onChange"
             >
               <span slot="label" slot-scope="scope" style="color: red">
-                <a-popover
-                  placement="right"
-                  trigger="click"
-                  @click="onClick(scope, item)"
-                >
+                <a-popover placement="right" trigger="click" @click="onClick(scope, item)">
                   <template slot="content">
-                    <AreaPop
-                      class="inner-area-item"
-                      :treeData="scope.children"
-                    ></AreaPop>
+                    <AreaPop class="inner-area-item" :treeData="scope.children"></AreaPop>
                   </template>
                   {{ scope.title }}
                 </a-popover>
               </span>
-            </a-checkbox-group>
+            </a-checkbox-group>-->
           </div>
           {{ item.title }}
         </a-popover>
@@ -81,17 +77,17 @@ export default {
       console.log("ppp", value);
     },
     onCheckAllChange(e) {
+      console.log(e);
       if (e.target) {
         let tree = this.changeTree(this.treeData, e.target.value);
-        if(tree.children) {
+        if (tree.children) {
           Object.assign(tree, {
-            checkedList: e.target.checked
-              ? this.getAllNodeId([], tree.children)
-              : [],
+            checkedList: e.target.checked ? this.getCurKeys(tree.children) : [],
             indeterminate: false,
             checkAll: e.target.checked,
           });
         }
+        console.log(tree);
       }
     },
     changeTree(list, key) {
@@ -108,9 +104,17 @@ export default {
       for (let i = 0; i < tree.length; i++) {
         keys.push(tree[i].value);
         if (tree[i].children) {
-          this.$set(tree[i], "checkedList", [])
+          this.$set(tree[i], "checkedList", []);
           keys = this.getAllNodeId(keys, tree[i].children);
         }
+      }
+      return keys;
+    },
+    getCurKeys(list) {
+      let keys = [];
+      for (let index = 0; index < list.length; index++) {
+        const item = list[index];
+        keys.push(item.value);
       }
       return keys;
     },
@@ -124,8 +128,8 @@ export default {
     },
   },
   created() {
-    this.getAllNodeId([], this.treeData)
-  }
+    this.getAllNodeId([], this.treeData);
+  },
 };
 </script>
 
